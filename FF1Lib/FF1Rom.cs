@@ -10,6 +10,18 @@ using System.IO;
 namespace FF1Lib
 {
 	// ReSharper disable once InconsistentNaming
+	public static class RomExtensions
+	{
+		public static void PutInBank(this Rom rom, int bank, int address, Blob data)
+		{
+			if ((address - 0x8000) + data.Length >= 0x4000)
+			{
+				throw new Exception("Data is too large to fit within its bank.");
+			}
+			int offset = (bank * 0x4000) + (address - 0x8000);
+			rom.Put(offset, data);
+		}
+	}
 	public partial class FF1Rom : NesRom
 	{
 		public const string Version = "1.5.5";
@@ -37,6 +49,31 @@ namespace FF1Lib
 
 		private FF1Rom()
 		{}
+
+		
+		public void UpgradeToMMC3()
+		{
+			Header[4] = 32; // 32 pages of 16 kB
+			Header[6] = 0x43; // original is 0x13 where 1 = MMC1 and 4 = MMC3
+
+			// Expand ROM size, moving bank 0F to the end.
+			Blob newData = new byte[0x80000];
+			Array.Copy(Data, newData, 0x3C000);
+			Array.Copy(Data, 0x3C000, newData, 0x7C000, 0x4000);
+			Data = newData;
+
+			// Change bank swap code.
+			// We put this code at SwapPRG_L, so we don't have to move any of the "long" calls to it.
+			// We completely overwrite SetMMC1SwapMode, since we don't need it anymore, and partially overwrite the original SwapPRG.
+			Put(0x7FE03, Blob.FromHex("48a9068d0080680a8d018048a9078d00806869018d0180a90060"));
+
+			// Initialize MMC3
+			Put(0x7FE48, Blob.FromHex("8d00e0a9808d01a0a0008c00a08c00808c0180c88c0080c88c01808c0080c8c88c0180a9038d0080c88c0180a9048d00804c1dfea900"));
+			Put(0x7FE1D, Blob.FromHex("c88c0180a9058d0080c88c01804c7cfe"));
+
+			// Rewrite the lone place where SwapPRG was called directly and not through SwapPRG_L.
+			Data[0x3FE97] = 0x03;
+		}
 
 		public static async Task<FF1Rom> CreateAsync(Stream readStream)
 		{
@@ -209,6 +246,14 @@ namespace FF1Lib
 			}
 
 			WriteSeedAndFlags(Version, seed.ToHex(), EncodeFlagsText(flags));
+
+			//MMC3 conversion
+			UpgradeToMMC3();
+
+			//Encounter table emu/hardware fix + track hard/soft resets
+			this.PutInBank(0x0F, 0x8000, Blob.FromHex("A9008D00208D012085FEA90885FF85FDA51BC901D00160A901851BA94DC5F9F008A9FF85F585F685F7182088C8B046A94DC5F918F013AD176469018D1764AD186469008D1864189010AD196469018D1964AD1A6469008D1A64A9008DFD64A200187D00647D00657D00667D0067E8D0F149FF8DFD6460"));
+			Put(0x7C012, Blob.FromHex("A90F2003FE200080EAEAEAEAEAEAEAEA"));
+
 		}
 
 		public override bool Validate()
