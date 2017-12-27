@@ -272,6 +272,23 @@ namespace FF1Lib
 			PutInBank(0x0F, 0x8400, Blob.FromHex("18ADA76069018DA7609003EEA86020A8FE60"));
 			PutInBank(0x1F, 0xF28D, Blob.FromHex("2000D8"));
 			PutInBank(0x1F, 0xD800, CreateLongJumpTableEntry(0x0F, 0x8400));
+			//Ambushes / Strike First
+			Put(0x313FB, Blob.FromHex("eaeaea2006D8"));
+			PutInBank(0x0F, 0x8420, Blob.FromHex("AD5668C90B9015C95A901F18ADAB6069018DAB609014EEAC6018900E18ADA96069018DA9609003EEAA60AC5668AE576860"));
+			PutInBank(0x1F, 0xD806, CreateLongJumpTableEntry(0x0F, 0x8420));
+			//Runs
+			Put(0x32418, Blob.FromHex("201CD8"));
+			PutInBank(0x0F, 0x8480, Blob.FromHex("AD5868F00E18ADAD6069018DAD609003EEAE60AD586860"));
+			PutInBank(0x1F, 0xD81C, CreateLongJumpTableEntry(0x0F, 0x8480));
+			//Physical Damage
+			PutInBank(0x0F, 0x84B0, Blob.FromHex("8E7D68AD8768F01DADB2606D82688DB260ADB3606D83688DB360ADB46069008DB46018901AADAF606D82688DAF60ADB0606D83688DB060ADB16069008DB160AE7D6860"));
+			PutInBank(0x1F, 0xD822, CreateLongJumpTableEntry(0x0F, 0x84B0));
+			Put(0x32968, Blob.FromHex("2022D8"));
+			//Magic Damage
+			PutInBank(0x0C, 0xB8ED, Blob.FromHex("2028D8eaeaea"));
+			PutInBank(0x1F, 0xD828, CreateLongJumpTableEntry(0x0F, 0x8500));
+			PutInBank(0x0F, 0x8500, Blob.FromHex("AD8A6C2980F01CADB2606D58688DB260ADB3606D59688DB360ADB46069008DB460901AADAF606D58688DAF60ADB0606D59688DB060ADB16069008DB160A912A212A00160"));
+
 
 			//Move controller handling out of bank 1F
 			//This bit of code is also altered to allow a hard reset using Up+A on controller 2
