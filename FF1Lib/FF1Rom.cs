@@ -268,8 +268,11 @@ namespace FF1Lib
 			//Pedometer
 			PutInBank(0x0F, 0x8100, Blob.FromHex("18A532D027A52D2901F006A550D01DF00398D018ADA06069018DA060ADA16069008DA160ADA26069008DA260A52F8530A9FF851860"));
 			Put(0x7D023, Blob.FromHex("A90F2003FE200081"));
+			//Count number of battles
+			PutInBank(0x0F, 0x8400, Blob.FromHex("18ADA76069018DA7609003EEA86020A8FE60"));
+			PutInBank(0x1F, 0xF28D, Blob.FromHex("2000D8"));
+			PutInBank(0x1F, 0xD800, CreateLongJumpTableEntry(0x0F, 0x8400));
 
-			
 			//Move controller handling out of bank 1F
 			//This bit of code is also altered to allow a hard reset using Up+A on controller 2
 			PutInBank(0x0F, 0x8200, Blob.FromHex("20108220008360"));
@@ -278,7 +281,8 @@ namespace FF1Lib
 			//Add long jump table entry for calling moved controller routines
 			PutInBank(0x1F, 0xD7C2, CreateLongJumpTableEntry(0x0F, 0x8200));
 			//Put LongJump routine 6 bytes after UpdateJoy used to be
-			PutInBank(0x1F, 0xD7C8, Blob.FromHex("851A98851B68851C68851DA001B11C851EC8B11C851FC8ADFC608519B11C2003FEA9D748A9F548A51AA41B6C1E00851EA5192003FEA51E60"));
+			PutInBank(0x1F, 0xD7C8, Blob.FromHex("85E99885EA6885EB6885ECA001B1EB85EDC8B1EB85EEC8ADFC6085E8B1EB2003FEA9D748A9F548A5E9A4EA6CED0085E9A5E82003FEA5E960"));
+			//LongJump entries can start at 0xD800
 			
 		}
 
