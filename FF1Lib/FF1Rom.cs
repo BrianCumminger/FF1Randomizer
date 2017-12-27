@@ -31,12 +31,25 @@ namespace FF1Lib
 
 		public void PutInBank(int bank, int address, Blob data)
 		{
-			if ((address - 0x8000) + data.Length >= 0x4000)
+			if (bank == 0x1F)
 			{
-				throw new Exception("Data is too large to fit within its bank.");
+				if ((address - 0xC000) + data.Length >= 0x4000)
+				{
+					throw new Exception("Data is too large to fit within its bank.");
+				}
+				int offset = (bank * 0x4000) + (address - 0xC000);
+				this.Put(offset, data);
 			}
-			int offset = (bank * 0x4000) + (address - 0x8000);
-			this.Put(offset, data);
+			else
+			{
+				if ((address - 0x8000) + data.Length >= 0x4000)
+				{
+					throw new Exception("Data is too large to fit within its bank.");
+				}
+				int offset = (bank * 0x4000) + (address - 0x8000);
+				this.Put(offset, data);
+			}
+
 		}
 
 		public FF1Rom(string filename) : base(filename)
@@ -228,6 +241,24 @@ namespace FF1Lib
 			ExtraTrackingAndInitCode();
 		}
 
+		private Blob CreateLongJumpTableEntry(byte bank, ushort addr)
+		{
+			List<byte> tmp = new List<byte>() { 0x20, 0xC8, 0xD7 }; //JSR $D7C8, beginning of each table entry
+			
+			var addr_bytes = BitConverter.GetBytes(addr); //next add the address to jump to
+			if (!BitConverter.IsLittleEndian)
+			{
+				tmp.Add(addr_bytes[1]);
+				tmp.Add(addr_bytes[0]);
+			}
+			else
+			{
+				tmp.Add(addr_bytes[0]);
+				tmp.Add(addr_bytes[1]);
+			}
+			tmp.Add(bank); //finally, add the bank that the routine is located in
+			return tmp.ToArray();
+		}
 		private void ExtraTrackingAndInitCode()
 		{
 			//Encounter table emu/hardware fix + track hard/soft resets
@@ -237,6 +268,18 @@ namespace FF1Lib
 			//Pedometer
 			PutInBank(0x0F, 0x8100, Blob.FromHex("18A532D027A52D2901F006A550D01DF00398D018ADA06069018DA060ADA16069008DA160ADA26069008DA260A52F8530A9FF851860"));
 			Put(0x7D023, Blob.FromHex("A90F2003FE200081"));
+
+			
+			//Move controller handling out of bank 1F
+			//This bit of code is also altered to allow a hard reset using Up+A on controller 2
+			PutInBank(0x0F, 0x8200, Blob.FromHex("20108220008360"));
+			PutInBank(0x0F, 0x8210, Blob.FromHex("A9018D1640A9008D1640A208AD16402903C9012620AD17402903C901261ECAD0EBA51EC988F0016020A8FE20A8FE20A8FEA2FF9AA900851E9500CAD0FBA6004C12C0"));
+			PutInBank(0x0F, 0x8300, Blob.FromHex("A5202903F002A2038611A520290CF0058A090C8511A52045212511452185214520AA2910F00EA5202910F002E623A521491085218A2920F00EA5202920F002E622A521492085218A2940F00EA5202940F002E625A521494085218A2980F00EA5202980F002E624A5214980852160")); //110 bytes
+			//Add long jump table entry for calling moved controller routines
+			PutInBank(0x1F, 0xD7C2, CreateLongJumpTableEntry(0x0F, 0x8200));
+			//Put LongJump routine 6 bytes after UpdateJoy used to be
+			PutInBank(0x1F, 0xD7C8, Blob.FromHex("851A98851B68851C68851DA001B11C851EC8B11C851FC8ADFC608519B11C2003FEA9D748A9F548A51AA41B6C1E00851EA5192003FEA51E60"));
+			
 		}
 
 		public override bool Validate()
@@ -258,11 +301,11 @@ namespace FF1Lib
 			// Change bank swap code.
 			// We put this code at SwapPRG_L, so we don't have to move any of the "long" calls to it.
 			// We completely overwrite SetMMC1SwapMode, since we don't need it anymore, and partially overwrite the original SwapPRG.
-			Put(0x7FE03, Blob.FromHex("48a9068d0080680a8d018048a9078d00806869018d0180a90060"));
+			Put(0x7FE03, Blob.FromHex("8dfc6048a9068d0080680a8d018048a9078d00806869018d0180a90060"));
 
 			// Initialize MMC3
-			Put(0x7FE48, Blob.FromHex("8d00e0a9808d01a0a0008c00a08c00808c0180c88c0080c88c01808c0080c8c88c0180a9038d0080c88c0180a9048d00804c1dfea900"));
-			Put(0x7FE1D, Blob.FromHex("c88c0180a9058d0080c88c01804c7cfe"));
+			Put(0x7FE48, Blob.FromHex("8d00e0a9808d01a0a0008c00a08c00808c0180c88c0080c88c01808c0080c8c88c0180a9038d0080c88c0180a9048d00804ccdffa900"));
+			Put(0x7FFCD, Blob.FromHex("c88c0180a9058d0080c88c01804c7cfeea"));
 
 			// Rewrite the lone place where SwapPRG was called directly and not through SwapPRG_L.
 			Data[0x7FE97] = 0x03;
