@@ -299,8 +299,13 @@ namespace FF1Lib
 			PutInBank(0x1F, 0xD7C2, CreateLongJumpTableEntry(0x0F, 0x8200));
 			//Put LongJump routine 6 bytes after UpdateJoy used to be
 			PutInBank(0x1F, 0xD7C8, Blob.FromHex("85E99885EA6885EB6885ECA001B1EB85EDC8B1EB85EEC8ADFC6085E8B1EB2003FEA9D748A9F548A5E9A4EA6CED0085E9A5E82003FEA5E960"));
-			//LongJump entries can start at 0xD800
-			
+			//LongJump entries can start at 0xD800 and must stop before 0xD850 (at which point additional space will need to be freed to make room)
+			//Battles use 2 separate and independent controller handlers for a total of 3 (because why not), so we patch these to respond to Up+A also
+			PutInBank(0x0F, 0x8580, Blob.FromHex("A0018C1640888C1640A008AD16404AB0014A6EB368AD17402903C901261E88D0EAA51EC988F004ADB3686020A8FE20A8FE20A8FEA2FF9AA900851E9500CAD0FBA6004C12C0"));
+			PutInBank(0x1F, 0xD828, CreateLongJumpTableEntry(0x0F, 0x8580));
+			PutInBank(0x0B, 0x9A06, Blob.FromHex("4C28D8"));
+			PutInBank(0x0C, 0x97C7, Blob.FromHex("2027F22028D82029ABADB36860"));
+
 		}
 
 		public override bool Validate()
