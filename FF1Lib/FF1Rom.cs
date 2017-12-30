@@ -285,8 +285,8 @@ namespace FF1Lib
 			PutInBank(0x1F, 0xD822, CreateLongJumpTableEntry(0x0F, 0x84B0));
 			Put(0x32968, Blob.FromHex("2022D8"));
 			//Magic Damage
-			PutInBank(0x0C, 0xB8ED, Blob.FromHex("2028D8eaeaea"));
-			PutInBank(0x1F, 0xD828, CreateLongJumpTableEntry(0x0F, 0x8500));
+			PutInBank(0x0C, 0xB8ED, Blob.FromHex("203AD8eaeaea"));
+			PutInBank(0x1F, 0xD83A, CreateLongJumpTableEntry(0x0F, 0x8500));
 			PutInBank(0x0F, 0x8500, Blob.FromHex("AD8A6C2980F01CADB2606D58688DB260ADB3606D59688DB360ADB46069008DB460901AADAF606D58688DAF60ADB0606D59688DB060ADB16069008DB160A912A212A00160"));
 
 
@@ -310,6 +310,11 @@ namespace FF1Lib
 			PutInBank(0x0F, 0x85D0, Blob.FromHex("EEB564A9008DFD64A200187D00647D00657D00667D0067E8D0F149FF8DFD64A952854B60"));
 			PutInBank(0x1F, 0xD82E, CreateLongJumpTableEntry(0x0F, 0x85D0));
 			PutInBank(0x0B, 0x9AF5, Blob.FromHex("202ED8EAEA"));
+
+			//"Nothing Here"s
+			PutInBank(0x0F, 0x8600, Blob.FromHex("EEB660A90060"));
+			PutInBank(0x1F, 0xD834, CreateLongJumpTableEntry(0x0F, 0x8600));
+			PutInBank(0x1F, 0xCBF3, Blob.FromHex("4C34D8"));
 
 		}
 
