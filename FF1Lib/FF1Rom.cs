@@ -306,6 +306,11 @@ namespace FF1Lib
 			PutInBank(0x0B, 0x9A06, Blob.FromHex("4C28D8"));
 			PutInBank(0x0C, 0x97C7, Blob.FromHex("2027F22028D82029ABADB36860"));
 
+			//Party Wipes
+			PutInBank(0x0F, 0x85D0, Blob.FromHex("EEB564A9008DFD64A200187D00647D00657D00667D0067E8D0F149FF8DFD64A952854B60"));
+			PutInBank(0x1F, 0xD82E, CreateLongJumpTableEntry(0x0F, 0x85D0));
+			PutInBank(0x0B, 0x9AF5, Blob.FromHex("202ED8EAEA"));
+
 		}
 
 		public override bool Validate()
