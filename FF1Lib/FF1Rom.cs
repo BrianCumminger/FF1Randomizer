@@ -251,6 +251,7 @@ namespace FF1Lib
 
 			WriteSeedAndFlags(Version, seed.ToHex(), EncodeFlagsText(flags));
 			ExtraTrackingAndInitCode();
+			FixBBAbsorbBug();
 		}
 		private void ExtraTrackingAndInitCode()
 		{

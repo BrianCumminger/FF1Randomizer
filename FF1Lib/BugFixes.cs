@@ -73,5 +73,12 @@ namespace FF1Lib
 		{
 			Put(0x32812, Blob.FromHex("DF")); // This is the craziest freaking patch ever, man.
 		}
+
+		public void FixBBAbsorbBug()
+		{
+			PutInBank(0x0F, 0x8700, Blob.FromHex("A000B186C902F005C908F00160A018B186301BC8B1863016C8B1863011C8B186300CA026B1861869010AA0209186A01CB186301AC8B1863015C8B1863010C8B186300BA026B186186901A022918660"));
+			PutInBank(0x0B, 0x9966, Blob.FromHex("2046D860"));
+			PutInBank(0x1F, 0xD846, CreateLongJumpTableEntry(0x0F, 0x8700));
+		}
 	}
 }
