@@ -86,9 +86,11 @@ namespace FF1Lib
 			EasterEggs();
 			DynamicWindowColor();
 			PermanentCaravan();
+			ShiftEarthOrbDown();
+
 			var map = new OverworldMap(this, flags);
 			var shopItemLocation = ItemLocations.CaravanItemShop1;
-			
+
 			if (flags.ModernBattlefield)
 			{
 				SetBattleUI(true);
@@ -119,6 +121,11 @@ namespace FF1Lib
 			{
 				var incentivesData = new IncentiveData(rng, flags, map.MapLocationRequirements);
 				ShuffleTreasures(rng, flags, incentivesData, shopItemLocation, map.MapLocationRequirements);
+
+				if (flags.ShardHunt)
+				{
+					EnableShardHunt(rng);
+				}
 			}
 
 			if (flags.MagicShops)

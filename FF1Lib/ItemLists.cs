@@ -57,7 +57,7 @@ namespace FF1Lib
 		public static readonly IReadOnlyCollection<Item> AllQuestItems =
 			Enum.GetValues(typeof(Item))
 				.Cast<Item>()
-				.Where(x => x > Item.Gold65000 || (x > Item.None && x <= Item.Oxyale))
+				.Where(x => x > Item.Gold65000 || (x > Item.None && x <= Item.Shard))
 				.ToList();
 
 		public static readonly IReadOnlyCollection<Item> AllWeapons =
