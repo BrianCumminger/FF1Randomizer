@@ -42,6 +42,7 @@
         <li><a href="#conveniences" data-toggle="tab">Conveniences</a></li>
 		<li><a href="#bug-fixes" data-toggle="tab">Bug Fixes</a></li>
 		<li><a href="#fun" data-toggle="tab">Fun %</a></li>
+		<li><a href="#plebs" data-toggle="tab">Plebs</a></li>
 	</ul>
 	<div class="tab-content clearfix" style="height: 500px">
 		<div class="section tab-pane active" id="shuffle">
@@ -210,7 +211,12 @@
 				</div>
 			</div>
 		</div>
-	</div>
+		<div class="section tab-pane" id="plebs">
+			<div class="col-xs-4">
+				<div class="checkbox-cell"><input type="checkbox" asp-for="Flags.OrganizeInventory" /> <label asp-for="Flags.OrganizeInventory">Auto-Organize Inventory</label></div>
+			</div>
+		</div>
+		</div>
 	<input class="section btn btn-primary" type="submit" value="Randomize" />
   </div>
 </form>

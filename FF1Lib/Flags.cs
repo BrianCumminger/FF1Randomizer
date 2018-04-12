@@ -155,6 +155,8 @@ namespace FF1Lib
 		[FlagString(Character = FILTHY_CASUALS, FlagBit = 4)]
 		public bool FreeOrbs { get; set; }
 		[FlagString(Character = FILTHY_CASUALS, FlagBit = 8)]
+		public bool OrganizeInventory { get; set; }
+		[FlagString(Character = FILTHY_CASUALS, FlagBit = 16)]
 		public bool VanillaStartingGold { get; set; }
 		[FlagString(Character = FILTHY_CASUALS, FlagBit = 32)]
 		public bool EasyMode { get; set; }

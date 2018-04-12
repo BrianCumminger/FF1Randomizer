@@ -328,6 +328,12 @@ namespace FF1Lib
 
 			WriteSeedAndFlags(Version, seed.ToHex(), Flags.EncodeFlagsText(flags));
 			ExtraTrackingAndInitCode();
+			if (flags.OrganizeInventory)
+			{
+				//sort inventory
+				PutInBank(0x0F, 0x8670, Blob.FromHex("8663A9009D0003A900856218A000A219BD2060F0058A990003C8E8E01CD0F1A216BD2060F0058A990003C8E8E019D0F1A200BD2060F0058A990003C8E8E012D0F160"));
+				PutInBank(0x1F, 0xEF58, Blob.FromHex("A90F2003FE207086EAEAEA"));
+			}
 		}
 
 		private void ExtraTrackingAndInitCode()
@@ -432,6 +438,7 @@ namespace FF1Lib
 			// Fast Battle Boxes Undraw (Similar... yet different!)
 			PutInBank(0x0F, 0x8A80, Blob.FromHex("A9A0858AA923858BA97E8588A96A858960"));
 			PutInBank(0x0F, 0x8AA0, Blob.FromHex($"A9{BattleBoxUndrawRows}8DB96820A1F420E8F4A58838E9208588A589E9008589A58A38E920858AA58BE900858BCEB968D0DE60"));
+			
 		}
 
 		public override bool Validate()
