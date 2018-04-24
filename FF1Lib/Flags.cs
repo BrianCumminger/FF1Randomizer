@@ -24,7 +24,14 @@ namespace FF1Lib
 		private const int CONVENIENCES = 14;
 		private const int BUG_FIXES = 15;
 		private const int ENEMY_BUG_FIXES = 16;
-		
+		private const int ENEMY_SCALE_SLIDER = 17;
+		private const int PRICE_SCALE_SLIDER = 18;
+		private const int EXP_MULTIPLIER_SLIDER = 19;
+		private const int EXP_BONUS_SLIDER = 20;
+		private const int FORCED_PARTY_SLIDER = 21;
+		private const int CONVENIENCES_2 = 22;
+
+
 		[FlagString(Character = ITEMS, FlagBit = 1)]
 		public bool Shops { get; set; }
 		[FlagString(Character = ITEMS, FlagBit = 2)]
@@ -171,11 +178,13 @@ namespace FF1Lib
 		public bool Dash { get; set; }
 		[FlagString(Character = CONVENIENCES, FlagBit = 8)]
 		public bool BuyTen { get; set; }
-
 		[FlagString(Character = CONVENIENCES, FlagBit = 16)]
 		public bool IdentifyTreasures { get; set; }
 		[FlagString(Character = CONVENIENCES, FlagBit = 32)]
 		public bool WaitWhenUnrunnable { get; set; }
+
+		[FlagString(Character = CONVENIENCES_2, FlagBit = 1)]
+		public bool InventoryReSort { get; set; }
 
 		[FlagString(Character = BUG_FIXES, FlagBit = 1)]
 		public bool HouseMPRestoration { get; set; }
@@ -195,15 +204,15 @@ namespace FF1Lib
 		[FlagString(Character = ENEMY_BUG_FIXES, FlagBit = 4)]
 		public bool EnemyElementalResistancesBug { get; set; }
 
-		[FlagString(Character = 17, Multiplier = 0.1)]
+		[FlagString(Character = ENEMY_SCALE_SLIDER, Multiplier = 0.1)]
 		public double EnemyScaleFactor { get; set; }
-		[FlagString(Character = 18, Multiplier = 0.1)]
+		[FlagString(Character = PRICE_SCALE_SLIDER, Multiplier = 0.1)]
 		public double PriceScaleFactor { get; set; }
-		[FlagString(Character = 19, Multiplier = 0.1)]
+		[FlagString(Character = EXP_MULTIPLIER_SLIDER, Multiplier = 0.1)]
 		public double ExpMultiplier { get; set; }
-		[FlagString(Character = 20, Multiplier = 10)]
+		[FlagString(Character = EXP_BONUS_SLIDER, Multiplier = 10)]
 		public int ExpBonus { get; set; }
-		[FlagString(Character = 21, Multiplier = 1)]
+		[FlagString(Character = FORCED_PARTY_SLIDER, Multiplier = 1)]
 		public int ForcedPartyMembers { get; set; }
 		
 		public bool ModernBattlefield { get; set; }

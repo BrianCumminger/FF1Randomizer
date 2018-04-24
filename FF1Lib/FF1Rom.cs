@@ -293,6 +293,11 @@ namespace FF1Lib
 				FixEnemyElementalResistances();
 			}
 
+			if (flags.InventoryReSort)
+			{
+				EnableInventoryReSort();
+			}
+
 			if (flags.FunEnemyNames)
 			{
 				FunEnemyNames(flags.TeamSteak);
