@@ -90,6 +90,7 @@ namespace FF1Lib
 			
 			MapLocationRequirements = mapLocationRequirements;
 			FloorLocationRequirements = floorLocationRequirements;
+			UpdateFullLocationRequirements();
 		}
 
 		const int teleportEntranceXOffset = 0x2C00;
@@ -353,6 +354,11 @@ namespace FF1Lib
 				MapLocationRequirements[key].Add(MapChange.TitanFed | MapChange.Canoe);
 			}
 
+			UpdateFullLocationRequirements();
+		}
+
+		private void UpdateFullLocationRequirements()
+		{
 			// Flatten into one Dictionary
 			FullLocationRequirements = new Dictionary<MapLocation, Tuple<List<MapChange>, AccessRequirement>>();
 			foreach (var mlr in MapLocationRequirements)
@@ -388,11 +394,6 @@ namespace FF1Lib
 					Console.WriteLine("Floors missing????");
 					throw new InsaneException();
 				}
-			}
-
-			foreach (var flr in FullLocationRequirements)
-			{
-				Console.WriteLine($"\tFULL: {flr.Key.ToString()}: {String.Join(", ", flr.Value.Item1.Select(mapChange => Enum.GetName(typeof(MapChange), mapChange)).ToArray())} & {Enum.GetName(typeof(AccessRequirement), flr.Value.Item2)}");
 			}
 		}
 		
