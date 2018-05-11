@@ -193,21 +193,11 @@ namespace FF1Lib
 			{
 				var itemName = Enum.GetName(typeof(Item), item.Item);
 				var locName = Enum.GetName(typeof(MapLocation), item.MapLocation);
-				Console.WriteLine($"{itemName} in {locName}, requires: ");
-
-				if (mapLocationRequirements.TryGetValue(item.MapLocation, out var mapChanges))
-				{
-					Console.WriteLine($"\tMapChanges: {String.Join(", ", mapChanges.Select(mapChange => Enum.GetName(typeof(MapChange), mapChange)).ToArray())}");
-				}
-
-				if (mapLocationFloorRequirements.TryGetValue(item.MapLocation, out var requirement))
-				{
-					Console.WriteLine($"\tFloor Requirements: {Enum.GetName(typeof(MapLocation), requirement.Item1)} - {Enum.GetName(typeof(AccessRequirement), requirement.Item2)}");
-				}
+				Console.Write($"{itemName} in {locName}, requires: \t");
 
 				if (fullLocationRequirements.TryGetValue(item.MapLocation, out var flr))
 				{
-					Console.WriteLine($"\tFULL: {String.Join(", ", flr.Item1.Select(mapChange => Enum.GetName(typeof(MapChange), mapChange)).ToArray())} & {Enum.GetName(typeof(AccessRequirement), flr.Item2)}");
+					Console.WriteLine($"[{String.Join("] OR [", flr.Item1.Select(mapChange => mapChange.ToString()).ToArray())}] AND {flr.Item2.ToString()}");
 				}
 			});
 
