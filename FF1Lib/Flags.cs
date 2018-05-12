@@ -208,7 +208,9 @@ namespace FF1Lib
 		public bool WrapStatOverflow { get; set; } // planned 2.x feature
 		[FlagString(Character = SCALE, FlagBit = 4)]
 		public bool WrapPriceOverflow { get; set; } // planned 2.x feature
-		
+		[FlagString(Character = SCALE, FlagBit = 8)]
+		public bool ProgressiveScaling { get; set; }
+
 		[FlagString(Character = 18, Multiplier = 0.1)]
 		public double EnemyScaleFactor { get; set; }
 		[FlagString(Character = 19, Multiplier = 0.1)]

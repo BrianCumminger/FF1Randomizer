@@ -226,6 +226,7 @@
 				<div class="slider-cell" title="Instead of capping, allow overflow values to start over at one"><input v-model="WrapStatOverflow" type="checkbox" asp-for="Flags.WrapStatOverflow" /> <label asp-for="Flags.WrapStatOverflow">Restart overflow at 1</label></div>
 				<div class="slider-cell"></div>
 				<div class="slider-cell" title="Scale Initial Gold with Prices and Gold scaling"><input v-model="StartingGold" type="checkbox" asp-for="Flags.StartingGold" /> <label asp-for="Flags.StartingGold">Starting Gold</label></div>
+				<div class="slider-cell" title="Scale gold and EXP progressively as player acquires more key items"><input v-model="ProgressiveScaling" type="checkbox" asp-for="Flags.ProgressiveScaling" /> <label asp-for="Flags.ProgressiveScaling">Progressive Scaling</label></div>
 			</div>
 		</div>
 		<div class="section tab-pane" id="conveniences">
