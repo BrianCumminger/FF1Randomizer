@@ -5,6 +5,16 @@ using Newtonsoft.Json;
 
 namespace FF1Lib
 {
+	public enum ProgressiveScaling
+	{
+		None = 0,
+		ThresholdQuarter,
+		ThresholdHalf,
+		ThresholdFull,
+		DynamicSlow,
+		DynamicAverage,
+		DynamicFast
+	}
 	public class Flags : IIncentiveFlags, IMapEditFlags, IScaleFlags, IFloorShuffleFlags
 	{
 		// Character Groupings
@@ -208,8 +218,6 @@ namespace FF1Lib
 		public bool WrapStatOverflow { get; set; } // planned 2.x feature
 		[FlagString(Character = SCALE, FlagBit = 4)]
 		public bool WrapPriceOverflow { get; set; } // planned 2.x feature
-		[FlagString(Character = SCALE, FlagBit = 8)]
-		public bool ProgressiveScaling { get; set; }
 
 		[FlagString(Character = 18, Multiplier = 0.1)]
 		public double EnemyScaleFactor { get; set; }
@@ -232,7 +240,7 @@ namespace FF1Lib
 		public bool PaletteSwap { get; set; }
 		public bool TeamSteak { get; set; }
 		public MusicShuffle Music { get; set; }
-
+		public ProgressiveScaling progScaling { get; set; }
 		public bool AllowStartAreaDanager { get; set; } = false;
 		
 		public bool MapCanalBridge => NPCItems || NPCFetchItems;
