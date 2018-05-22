@@ -17,6 +17,12 @@ namespace FF1Lib
 		public const int RngOffset = 0x7F100;
 		public const int RngSize = 256;
 
+		public const int ThreatLevelsOffset = 0x2CC00;
+		public const int ThreatLevelsSize = 64;
+		public const int OverworldThreatLevelOffset = 0x7C4FE;
+		public const int OceanThreatLevelOffset = 0x7C506;
+		
+
 		public const int LevelRequirementsOffset = 0x2D000;
 		public const int LevelRequirementsSize = 3;
 		public const int LevelRequirementsCount = 49;
@@ -335,7 +341,7 @@ namespace FF1Lib
 			FixVanillaRibbon(itemText);
 			ExpGoldBoost(flags.ExpBonus, flags.ExpMultiplier);
 			ScalePrices(flags, itemText, rng);
-			ScaleEncounterRate(flags.EncounterRate / 50.0);
+			ScaleEncounterRate(flags.EncounterRate / 16.0);
 
 			overworldMap.ApplyMapEdits();
 			WriteMaps(maps);
@@ -546,10 +552,26 @@ namespace FF1Lib
 
 		private void ScaleEncounterRate(double multiplier)
 		{
-			var newRng = Get(RngOffset, RngSize).ToBytes()
-				.Select(x => (byte)(multiplier <= 0.01 ? 240 : Math.Min(240, x / multiplier)))
-				.ToArray();
-			Put(RngOffset, newRng);
+			if (multiplier == 0)
+			{
+				PutInBank(0x1F, 0xC50E, Blob.FromHex("EAEA"));
+				PutInBank(0x1F, 0xCDCC, Blob.FromHex("1860"));
+			}
+			else
+			{
+				var newThreats = Get(ThreatLevelsOffset, ThreatLevelsSize).ToBytes();
+				byte[] extraThreats = new byte[] { Data[OverworldThreatLevelOffset], Data[OceanThreatLevelOffset] };
+
+				newThreats = newThreats.Select(x => (byte)Math.Ceiling(x * multiplier))
+					.ToArray();
+				extraThreats = extraThreats.Select(x => (byte)Math.Ceiling(x * multiplier))
+					.ToArray();
+
+				Put(ThreatLevelsOffset, newThreats);
+				Data[OverworldThreatLevelOffset] = extraThreats[0];
+				Data[OceanThreatLevelOffset] = extraThreats[1];
+			}
+			
 		}
 
 		public void ExpGoldBoost(double bonus, double multiplier)
