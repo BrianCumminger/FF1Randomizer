@@ -24,7 +24,7 @@
 		"ItemMagic": false,
 
 		"Rng": true,
-		"EnemyFormationsFrequency": false,
+		"FormationShuffleMode": 0,
 		"EnemyFormationsUnrunnable": false,
 		"EnemyFormationsSurprise": false,
 		"EnemyTrapTiles": false,

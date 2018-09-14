@@ -40,6 +40,7 @@ namespace FF1Lib
 		private const int PARTY_4 = 29;
 		private const int PARTY_EXTRA = 30;
 		private const int PARTY_EXTRA2 = 31;
+		private const int FORMATION = 32;
 
 
 		[FlagString(Character = ITEMS, FlagBit = 1)]
@@ -79,8 +80,6 @@ namespace FF1Lib
 
 		[FlagString(Character = ENCOUNTERS, FlagBit = 1)]
 		public bool Rng { get; set; }
-		[FlagString(Character = ENCOUNTERS, FlagBit = 2)]
-		public bool EnemyFormationsFrequency { get; set; }
 		[FlagString(Character = ENCOUNTERS, FlagBit = 4)]
 		public bool EnemyFormationsUnrunnable { get; set; }
 		[FlagString(Character = ENCOUNTERS, FlagBit = 8)]
@@ -336,6 +335,8 @@ namespace FF1Lib
 		public bool WeaponPermissions { get; set; }
 		[FlagString(Character = PARTY_EXTRA2, FlagBit = 4)]
 		public bool ArmorPermissions { get; set; }
+		[FlagString(Character = FORMATION, FlagBit = 3)]
+		public FormationShuffleModeEnum FormationShuffleMode { get; set; }
 
 		public bool ModernBattlefield { get; set; }
 		public bool FunEnemyNames { get; set; }
