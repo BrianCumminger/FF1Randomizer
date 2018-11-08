@@ -200,7 +200,7 @@ namespace FF1Lib
 				// 7. Check sanity and loop if needed
 			} while (!CheckSanity(placedItems, fullLocationRequirements, flags));
 
-			if (Debugger.IsAttached)
+			if (false)
 			{
 				Console.WriteLine($"ItemPlacement::PlaceSaneItems required {sanityCounter} iterations.");
 				Console.WriteLine("");

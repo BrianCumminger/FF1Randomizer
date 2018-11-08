@@ -621,7 +621,7 @@ namespace FF1Lib
 
 		public void dump()
 		{
-			_log.ForEach(Console.WriteLine);
+			//_log.ForEach(Console.WriteLine);
 		}
 
 		public Dictionary<MapLocation, Tuple<List<MapChange>, AccessRequirement>> FullLocationRequirements;

@@ -166,7 +166,7 @@ namespace FF1Lib
 				}
 				catch (InsaneException)
 				{
-					Console.WriteLine("Insane seed. Retrying");
+					//Console.WriteLine("Insane seed. Retrying");
 					if (maxRetries > (i + 1)) continue;
 					throw new InvalidOperationException("Failed Sanity Check too many times");
 				}
