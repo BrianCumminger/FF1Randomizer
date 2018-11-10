@@ -6,19 +6,59 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace Sandbox
 {
 	class Program
 	{
 		public const string HelpText =	"Final Fantasy Randomizer Statistics Generator\n" +
-										"Usage: ffrstag (-f|--flags) <FLAGS> (-i|--iterations) <INT> [(-c|--compact)]\n" +
+										"Usage: ffrstag (-f|--flags) <FLAGS> (-i|--iterations) <INT> [(-c|--compact)] [(-s|--summarize)]\n" +
 										"\n" +
 										"-f|--flags          Flags to generate stats for\n" +
 										"-i|--iterations     Number of seeds to process\n" +
 										"-c|--compact        Only output stats for 'important' items\n" +
+										"-s|--summarize      Combine chest locations into general areas\n" +
 										"\n" +
 										"Please ensure that a valid ff1.nes rom can be found in the current working directory.\n";
+		public static Dictionary<string, int[]> LocationGroups = new Dictionary<string, int[]>
+		{
+			{"Coneria", new int[] {0x3101, 0x3102, 0x3103, 0x3104, 0x3105, 0x3106} },
+			{"ToF", new int[] {0x3107, 0x3108, 0x3109} },
+			{"ToF Locked", new int[] {0x310A, 0x310B, 0x310C} },
+			{"Elfland", new int[] {0x310D, 0x310E, 0x310F, 0x3110} },
+			{"Northwest Castle", new int[] {0x3111, 0x3112, 0x3113} },
+			{"Marsh", new int[] {0x3114, 0x3115, 0x3116, 0x3117, 0x3118, 0x3119, 0x311A, 0x311B, 0x311C, 0x311D} },
+			{"Marsh Locked", new int[] {0x311E, 0x311F, 0x3120} },
+			{"Dwarf", new int[] {0x3121, 0x3122} },
+			{"Dwarf Locked", new int[] {0x3123, 0x3124, 0x3125, 0x3126, 0x3127, 0x3128, 0x3129, 0x312A} },
+			{"Matoya's Cave", new int[] {0x312B, 0x312C, 0x312D} },
+			{"Earth", new int[] {0x312E, 0x312F, 0x3130, 0x3131, 0x3132, 0x3133, 0x3134, 0x3135, 0x3136, 0x3137, 0x3138, 0x3139, 0x313A, 0x313B, 0x313C, 0x313D} },
+			{"Earth (Rod Locked)", new int[] {0x313E, 0x313F, 0x3140, 0x3141, 0x3142, 0x3143, 0x3144, 0x3145} },
+			{"Titan's Tunnel", new int[] {0x3146, 0x3147, 0x3148, 0x3149} },
+			{"Volcano", new int[] {0x314A, 0x314B, 0x314C, 0x314D, 0x314E, 0x314F, 0x3150, 0x3151, 0x3152, 0x3153, 0x3154, 0x3155, 0x3156, 0x3157, 0x3158, 0x3159, 0x315A, 0x315B, 0x315C, 0x315D,  0x315E, 0x315F, 0x3160, 0x3161, 0x3162, 0x3163, 0x3164, 0x3165, 0x3166, 0x3167, 0x3168, 0x3169, 0x316A} },
+			{"Ice Cave", new int[] {0x316B, 0x316C, 0x316D, 0x316E, 0x316F, 0x3170, 0x3171, 0x3172, 0x3173, 0x3174, 0x3175, 0x3176, 0x3177, 0x3178, 0x3179, 0x317A} },
+			{"Ordeals", new int[] {0x317B, 0x317C, 0x317D, 0x317E, 0x317F, 0x3180, 0x3181, 0x3182, 0x3183} },
+			{"Cardia", new int[] {0x3184, 0x3185, 0x3186, 0x3187, 0x3188, 0x3189, 0x318A, 0x318B, 0x318C, 0x318D, 0x318E, 0x318F, 0x3190} },
+			{"Sea Shrine", new int[] {0x3195, 0x3196, 0x3197, 0x3198, 0x3199, 0x319A, 0x319B, 0x319C, 0x319D, 0x319E, 0x319F, 0x31A0, 0x31A1, 0x31A2, 0x31A3, 0x31A4, 0x31A5, 0x31A6, 0x31A7, 0x31A8, 0x31A9, 0x31AA, 0x31AB, 0x31AC, 0x31AD, 0x31AE, 0x31AF, 0x31B0, 0x31B1, 0x31B2, 0x31B3, 0x31B4} },
+			{"Waterfall", new int[] {0x31B5, 0x31B6, 0x31B7, 0x31B8, 0x31B9, 0x31BA} },
+			{"Mirage Tower", new int[] {0x31C4, 0x31C5, 0x31C6, 0x31C7, 0x31C8, 0x31C9, 0x31CA, 0x31CB, 0x31CC, 0x31CD, 0x31CE, 0x31CF, 0x31D0, 0x31D1, 0x31D2, 0x31D3, 0x31D4, 0x31D5} },
+			{"Sky Cave", new int[] {0x31D6, 0x31D7, 0x31D8, 0x31D9, 0x31DA, 0x31DB, 0x31DC, 0x31DD, 0x31DE, 0x31DF, 0x31E0, 0x31E1, 0x31E2, 0x31E3, 0x31E4, 0x31E5, 0x31E6, 0x31E7,	0x31E8, 0x31E9, 0x31EA, 0x31EB, 0x31EC, 0x31ED, 0x31EE, 0x31EF, 0x31F0, 0x31F1, 0x31F2, 0x31F3, 0x31F4, 0x31F5, 0x31F6, 0x31F7} },
+			{"ToFR", new int[] {0x31F8, 0x31F9, 0x31FA, 0x31FB, 0x31FC, 0x31FD, 0x31FE} },
+			{"Princess", new int[] { 0x39620 } },
+			{"King", new int[] { 0x395DC } },
+			{"Matoya", new int[] { 0x39600} },
+			{"Bikke", new int[] { 0x395E8} },
+			{"Elf Prince", new int[] { 0x000395f0} },
+			{"Astos", new int[] { 0x000395f4} },
+			{"Nerrick", new int[] { 0x000395f8} },
+			{"Dwarven Smith", new int[] { 0x000395fc} },
+			{"Sarda", new int[] { 0x0003960c} },
+			{"Canoe Sage", new int[] { 0x0003962c} },
+			{"Waterfall Robot", new int[] { 0x0003961c} },
+			{"Fairy", new int[] { 0x00039624} },
+			{"Lefein NPC", new int[] { 0x000398c4} }
+		};
 		public static Dictionary<string, int> Locations = new Dictionary<string, int> {
 			{"Coneria Left Locked 1", 0x3101 },
 			{"Coneria Left Locked 2", 0x3102 },
@@ -506,6 +546,8 @@ namespace Sandbox
 			string flagsstring = "PACBGAAAAAAAHI!fPAPeZZeAAeP";
 			Dictionary<string, int> Treasures = TreasuresComplete;
 			bool flagsset = false;
+			bool summarize = false;
+			bool compact = false;
 
 			int a = 0;
 			while (a < args.Length)
@@ -539,6 +581,13 @@ namespace Sandbox
 					case "-c":
 					case "--compact":
 						Treasures = TreasuresCondensed;
+						compact = true;
+						a += 1;
+						break;
+
+					case "-s":
+					case "--summarize":
+						summarize = true;
 						a += 1;
 						break;
 
@@ -571,56 +620,90 @@ namespace Sandbox
 
 			Console.Out.WriteLine(Flags.EncodeFlagsText(flags));
 			Dictionary<int, Dictionary<int, int>> treasureCounts = new Dictionary<int, Dictionary<int, int>>();
+			Dictionary<int, Dictionary<int[], int>> treasureGroupCounts = new Dictionary<int, Dictionary<int[], int>>();
 			IEnumerable<int> LocationValues = Locations.Values;
 			IEnumerable<int> TreasureValues = Treasures.Values;
+			IEnumerable<int[]> LocationGroupValues = LocationGroups.Values;
 			foreach (int t in TreasureValues)
 			{
 				treasureCounts.Add(t, new Dictionary<int, int>());
+				treasureGroupCounts.Add(t, new Dictionary<int[], int>());
 				foreach (int loc in LocationValues)
 				{
 					treasureCounts[t].Add(loc, 0);
+				}
+				foreach (int[] locs in LocationGroupValues)
+				{
+					treasureGroupCounts[t].Add(locs, 0);
 				}
 			}
 
 			void get_the_data(int seed)
 			{
-				//flags = Flags.DecodeFlagsText("PACBGAAAAAAAHI!fPAPeZZeAAeP");
 				var rom = new FF1Rom(ROMPATH);
 				Blob rseed = Blob.Random(4);
 				//rseed = Blob.FromHex("11111111");
 				rom.Randomize(rseed, flags);
-				//int p = 0;
-
-				//var treasureBlob = rom.Get(TreasureOffset, TreasureSize * TreasureCount);
 				lock (treasureCounts)
 				{
 					foreach (int i in LocationValues)
 					{
 						if (TreasureValues.Contains(rom[i]))
 						{
-
 							treasureCounts[rom[i]][i]++;
-
 						}
 					}
-
+					foreach (int[] locs in LocationGroupValues)
+					{
+						foreach (int loc in locs)
+						{
+							if (TreasureValues.Contains(rom[loc]))
+							{
+								treasureGroupCounts[rom[loc]][locs]++;
+							}
+						}
+					}
 					seedsGenerated++;
 				}
-				
 				drawUpdate();
 			}
 
 
 			System.Threading.Tasks.Parallel.For(0, seeds, get_the_data);
 
-			var outfile = System.IO.File.CreateText($"ffrstag_{flagsstring}_{seeds}.csv");
-			outfile.AutoFlush = true;
+			string fnCompact = "";
+			string fnSummarize = "";
+			string fnSeparator = "";
 
+			if (compact) { fnCompact = "c"; }
+			if (summarize) { fnSummarize = "s"; }
+			if (compact | summarize) { fnSeparator = "_"; }
+
+			var outfile = System.IO.File.CreateText($"ffrstag_{flagsstring}_{seeds}{fnSeparator}{fnCompact}{fnSummarize}.csv");
+			outfile.AutoFlush = true;
+			if (summarize)
+			{
+				WriteSummarized(outfile, Treasures, treasureGroupCounts);
+			}
+			else
+			{
+				WriteUnsummarized(outfile, Treasures, treasureCounts);
+			}
+			
+
+			outfile.Close();
+			Console.WriteLine(" ");
+			Console.WriteLine($"Summarized {seeds} seeds.");
+			//Console.ReadKey();
+		}
+
+		private static void WriteSummarized(StreamWriter outfile, Dictionary<string, int> treasures, Dictionary<int, Dictionary<int[], int>> treasureGroupCounts)
+		{
 			StringBuilder header = new StringBuilder();
 			StringBuilder line = new StringBuilder(2048);
 			header.Append(",");
-			IEnumerable<string> LocationNames = Locations.Keys;
-			IEnumerable<string> TreasureNames = Treasures.Keys;
+			IEnumerable<string> LocationNames = LocationGroups.Keys;
+			IEnumerable<string> TreasureNames = treasures.Keys;
 			foreach (string s in TreasureNames)
 			{
 				header.Append($"{s},");
@@ -629,24 +712,42 @@ namespace Sandbox
 			outfile.WriteLine(header);
 			foreach (string location in LocationNames)
 			{
-				//if (unusedChests.Contains(row))
-				//{
-				//	continue;
-				//}
 				line = new StringBuilder(2048);
 				line.Append($"{location},");
 				foreach (string treasure in TreasureNames)
 				{
-					line.Append($"{treasureCounts[Treasures[treasure]][Locations[location]]},");
+					line.Append($"{treasureGroupCounts[treasures[treasure]][LocationGroups[location]]},");
 				}
 				line.Remove(line.Length - 1, 1);
 				outfile.WriteLine(line.ToString());
 			}
-
-			outfile.Close();
-			Console.WriteLine(" ");
-			Console.WriteLine($"Summarized {seeds} seeds.");
-			//Console.ReadKey();
 		}
+
+		private static void WriteUnsummarized(StreamWriter outfile, Dictionary<string, int> treasures, Dictionary<int, Dictionary<int, int>> treasureCounts)
+		{
+			StringBuilder header = new StringBuilder();
+			StringBuilder line = new StringBuilder(2048);
+			header.Append(",");
+			IEnumerable<string> LocationNames = Locations.Keys;
+			IEnumerable<string> TreasureNames = treasures.Keys;
+			foreach (string s in TreasureNames)
+			{
+				header.Append($"{s},");
+			}
+			header.Remove(header.Length - 1, 1);
+			outfile.WriteLine(header);
+			foreach (string location in LocationNames)
+			{
+				line = new StringBuilder(2048);
+				line.Append($"{location},");
+				foreach (string treasure in TreasureNames)
+				{
+					line.Append($"{treasureCounts[treasures[treasure]][Locations[location]]},");
+				}
+				line.Remove(line.Length - 1, 1);
+				outfile.WriteLine(line.ToString());
+			}
+		}
+
 	}
 }

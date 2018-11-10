@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Sandbox": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-f PACBGAAAYDAAHI!fPAPeZZeAAeP -i 2000 -s"
     }
   }
 }
