@@ -18,7 +18,6 @@ namespace Sandbox
 										"-f|--flags          Flags to generate stats for\n" +
 										"-i|--iterations     Number of seeds to process\n" +
 										"-c|--compact        Only output stats for 'important' items\n" +
-										"-s|--summarize      Combine chest locations into general areas\n" +
 										"\n" +
 										"Please ensure that a valid ff1.nes rom can be found in the current working directory.\n";
 		public static Dictionary<string, int[]> LocationGroups = new Dictionary<string, int[]>
@@ -585,12 +584,6 @@ namespace Sandbox
 						a += 1;
 						break;
 
-					case "-s":
-					case "--summarize":
-						summarize = true;
-						a += 1;
-						break;
-
 					case "--help":
 					case "-h":
 						Console.WriteLine(HelpText);
@@ -679,19 +672,15 @@ namespace Sandbox
 			if (summarize) { fnSummarize = "s"; }
 			if (compact | summarize) { fnSeparator = "_"; }
 
-			var outfile = System.IO.File.CreateText($"ffrstag_{flagsstring}_{seeds}{fnSeparator}{fnCompact}{fnSummarize}.csv");
-			outfile.AutoFlush = true;
-			if (summarize)
-			{
-				WriteSummarized(outfile, Treasures, treasureGroupCounts);
-			}
-			else
-			{
-				WriteUnsummarized(outfile, Treasures, treasureCounts);
-			}
-			
-
+			var outfile = System.IO.File.CreateText($"ffrstag_{flagsstring}_{seeds}_grouped{fnSeparator}{fnCompact}.csv");
+			WriteSummarized(outfile, Treasures, treasureGroupCounts);
 			outfile.Close();
+
+			outfile = System.IO.File.CreateText($"ffrstag_{flagsstring}_{seeds}{fnSeparator}{fnCompact}.csv");
+			WriteUnsummarized(outfile, Treasures, treasureCounts);
+
+
+			
 			Console.WriteLine(" ");
 			Console.WriteLine($"Summarized {seeds} seeds.");
 			//Console.ReadKey();
